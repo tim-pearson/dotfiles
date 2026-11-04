@@ -67,6 +67,7 @@ o.bind("SUPER + D", "Omarchy menu", "omarchy-menu toggle root")
 
 -- Super + Shift + Q → close window
 hl.unbind("SUPER + W")
+hl.unbind("SUPER + SHIFT + Q")
 o.bind("SUPER + SHIFT + Q", "Close window", hl.dsp.window.close())
 
 -- Super + F, then K → keybindings
