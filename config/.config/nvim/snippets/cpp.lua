@@ -1,0 +1,186 @@
+function getName()
+  local name = vim.fn.expand("%:t:r")
+  return name .. ".hh"
+end
+
+return {
+  -- Include guard
+  s("once", { t({ "#pragma once", "" }) }),
+
+  -- Include current file header
+  s("inc", { t('#include "'), f(getName), t('"') }),
+
+  -- Standard loops
+  s({ trig = "fori", priority = 100000000 }, {
+    t("for (int "),
+    i(1, "i"),
+    t(" = "),
+    i(2, "0"),
+    t("; "),
+    l(l._1, 1),
+    t(" < "),
+    i(3, "lim"),
+    t("; "),
+    l(l._1, 1),
+    t({ "++)", "{", "	" }),
+    i(0),
+    t({ "", "}" }),
+  }),
+  s({ trig = "forui", priority = 100000000 }, {
+    t("for (unsigned int "),
+    i(1, "i"),
+    t(" = "),
+    i(2, "0"),
+    t("; "),
+    l(l._1, 1),
+    t(" < "),
+    i(3, "lim"),
+    t("; "),
+    l(l._1, 1),
+    t({ "++)", "{", "	" }),
+    i(0),
+    t({ "", "}" }),
+  }),
+  s({ trig = "forst", priority = 100000000 }, {
+    t("for (size_t "),
+    i(1, "i"),
+    t(" = "),
+    i(2, "0"),
+    t("; "),
+    l(l._1, 1),
+    t(" < "),
+    i(3, "lim"),
+    t("; "),
+    l(l._1, 1),
+    t({ "++)", "{", "	" }),
+    i(0),
+    t({ "", "}" }),
+  }),
+  s("swhile", {
+    t("int "),
+    i(1, "i"),
+    t({ " = 0;", "while (" }),
+    i(2, "mystr"),
+    t("["),
+    l(l._1, 1),
+    t({ "])", "{", "    " }),
+    i(0),
+    t({ "", "    " }),
+    l(l._1, 1),
+    t({ "++;", "}", "" }),
+  }),
+  s("print", {
+    t({ "std::cout << " }),
+    i(0, '"OK"'),
+    t({ " << '\\n';" }),
+  }),
+  s("ptype", {
+    t({ "std::cout << typeid(" }),
+    i(0, ""),
+    t({ ").name() << '\\n';" }),
+  }),
+
+  -- Kokkos snippets
+  s("kinit", {
+    t({ "Kokkos::initialize(argc, argv);", "" }),
+  }),
+  s("kfinal", {
+    t({ "Kokkos::finalize();", "" }),
+  }),
+  s("kview1d", {
+    t("Kokkos::View<"),
+    i(1, "double*"),
+    t({ "> " }),
+    i(2, "vec"),
+    t({ '("' }),
+    l(l._2, 2),
+    t({ '", ' }),
+    i(3, "N"),
+    t({ ");", "" }),
+  }),
+  s("kview2d", {
+    t("Kokkos::View<"),
+    i(1, "double**"),
+    t({ "> " }),
+    i(2, "mat"),
+    t({ '("' }),
+    l(l._2, 2),
+    t({ '", ' }),
+    i(3, "N"),
+    t({ ", " }),
+    i(4, "M"),
+    t({ ");", "" }),
+  }),
+  s("kparfor", {
+    t("Kokkos::parallel_for("),
+    i(1, '"loop"'),
+    t({ ", " }),
+    i(2, "Kokkos::RangePolicy<>(0, N)"),
+    t({ ", KOKKOS_LAMBDA(int i) {", "    " }),
+    i(0),
+    t({ "", "});", "" }),
+  }),
+  s("kparfor2d", {
+    t("Kokkos::parallel_for("),
+    i(1, '"loop"'),
+    t({ ", " }),
+    i(2, "Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {N, M})"),
+    t({ ", KOKKOS_LAMBDA(int i, int j) {", "    " }),
+    i(0),
+    t({ "", "});", "" }),
+  }),
+  s("kdeepcopy", {
+    t("Kokkos::deep_copy("),
+    i(1, "dst"),
+    t({ ", " }),
+    i(2, "src"),
+    t({ ");", "" }),
+  }),
+  s("ktimer", {
+    t({ "Kokkos::Timer timer;", "" }),
+  }),
+  s("ktime", {
+    t({ "std::cout << \"Time: \" << timer.seconds() << '\\n';", "" }),
+  }),
+  s("kfence", {
+    t({ "Kokkos::fence();", "" }),
+  }),
+  s("kconfig", {
+    t({ "Kokkos::print_configuration(std::cout);", "" }),
+  }),
+  s("kexec", {
+    t("using ExecSpace = Kokkos::"),
+    i(1, "OpenMP"),
+    t({ ";", "" }),
+  }),
+  s("kpolicy1d", {
+    t("Kokkos::RangePolicy<ExecSpace> policy(0, "),
+    i(1, "N"),
+    t({ ");", "" }),
+  }),
+  s("kpolicy2d", {
+    t("Kokkos::MDRangePolicy<Kokkos::Rank<2>, ExecSpace> policy({0, 0}, {"),
+    i(1, "N"),
+    t({ ", " }),
+    i(2, "M"),
+    t({ "});", "" }),
+  }),
+  s("kmirror", {
+    t("auto mirror = Kokkos::create_mirror_view("),
+    i(1, "vec"),
+    t({ ");", "" }),
+  }),
+  s("kreduce", {
+    t({ "Kokkos::parallel_reduce(" }),
+    i(1, '"reduce"'),
+    t({ ", " }),
+    i(2, "Kokkos::RangePolicy<>(0, N)"),
+    t({ ", KOKKOS_LAMBDA(int i, " }),
+    i(3, "double"),
+    t({ "& sum) {", "    sum += " }),
+    i(4, "vec(i)"),
+    t({ ";", "}, " }),
+    i(5, "init_val"),
+    t({ ");", "" }),
+  }),
+}

@@ -1,0 +1,9 @@
+{
+    "diagnostics.globals": [
+        "vim",
+        "s"
+    ],
+    "diagnostics.disable": [
+        "undefined-global"
+    ]
+}
